@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отличник Койн</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #f3c623, #f08a5d);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: #333;
+        }
+
+        header {
+            background: #f38181;
+            color: white;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header a {
+            text-decoration: none;
+            color: white;
+            background: #95e1d3;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .game-container {
+            margin: 50px auto;
+            max-width: 600px;
+            padding: 20px;
+            background: #f7f1e3;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .tap-button {
+            display: block;
+            margin: 20px auto;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            background: #ffb677;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .tap-button:hover {
+            transform: scale(1.05);
+            background: #ff8364;
+        }
+
+        .shop {
+            margin-top: 30px;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #f38181;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .shop-item button {
+            background: #95e1d3;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .shop-item button:disabled {
+            background: #d3d3d3;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Отличник Койн</h1>
+        <a href="#">О нас</a>
+    </header>
+
+    <div class="game-container">
+        <p>Текущие клики: <span id="click-count">0</span></p>
+        <p>Клики за нажатие: <span id="click-per-tap">1</span></p>
+        <button class="tap-button" id="tap-button">Тапай!</button>
+
+        <div class="shop">
+            <h2>Магазин улучшений</h2>
+            <div class="shop-item">
+                <span>Автокликер (+1 клик/сек)</span>
+                <button id="autoclicker-button">Купить за 10</button>
+            </div>
+            <div class="shop-item">
+                <span>Увеличение кликов за нажатие</span>
+                <button id="upgrade-click-button">Купить за 15</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация данных
+        let clickCount = parseInt(localStorage.getItem('clickCount')) || 0;
+        let clickPerTap = parseInt(localStorage.getItem('clickPerTap')) || 1;
+        let autoclickerActive = localStorage.getItem('autoclickerActive') === 'true';
+
+        // Элементы страницы
+        const clickCountSpan = document.getElementById('click-count');
+        const clickPerTapSpan = document.getElementById('click-per-tap');
+        const tapButton = document.getElementById('tap-button');
+        const autoclickerButton = document.getElementById('autoclicker-button');
+        const upgradeClickButton = document.getElementById('upgrade-click-button');
+
+        // Обновление интерфейса
+        function updateUI() {
+            clickCountSpan.textContent = clickCount;
+            clickPerTapSpan.textContent = clickPerTap;
+            autoclickerButton.disabled = clickCount < 10 || autoclickerActive;
+            upgradeClickButton.disabled = clickCount < 15;
+        }
+
+        // Сохранение данных
+        function saveProgress() {
+            localStorage.setItem('clickCount', clickCount);
+            localStorage.setItem('clickPerTap', clickPerTap);
+            localStorage.setItem('autoclickerActive', autoclickerActive);
+        }
+
+        // Обработка нажатия кнопки
+        tapButton.addEventListener('click', () => {
+            clickCount += clickPerTap;
+            updateUI();
+            saveProgress();
+        });
+
+        // Покупка автокликера
+        autoclickerButton.addEventListener('click', () => {
+            if (clickCount >= 10 && !autoclickerActive) {
+                clickCount -= 10;
+                autoclickerActive = true;
+                setInterval(() => {
+                    clickCount++;
+                    updateUI();
+                    saveProgress();
+                }, 1000);
+                updateUI();
+                saveProgress();
+            }
+        });
+
+        // Покупка увеличения кликов за нажатие
+        upgradeClickButton.addEventListener('click', () => {
+            if (clickCount >= 15) {
+                clickCount -= 15;
+                clickPerTap++;
+                updateUI();
+                saveProgress();
+            }
+        });
+
+        // Инициализация интерфейса
+        updateUI();
+    </script>
+</body>
+</html>
